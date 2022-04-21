@@ -1,0 +1,30 @@
+table {
+    width: 100%;
+  }
+  
+  #div{
+    margin: 20px 0px 0px 0px;
+  }
+  .mat-form-field {
+    font-size: 12px;
+    width: 25%;
+  }
+  #mat-form-field {
+    width:320px !important;
+  }
+
+  #mat-form-select {
+    width:330px !important  
+  }
+
+  #btn{
+    width: 70px;
+    margin: 5px;
+  }
+  .mat-blue {
+    background-color: #117A8B;
+    color: #fff;
+    float: right;
+    margin: 0px 3px;
+}
+  

@@ -1,0 +1,163 @@
+<app-header title="Academic Years" subTitle="control pannel" page="academic-year"></app-header>
+<mat-card>
+  <div id="div">
+
+    <button mat-raised-button color="primary" (click)="openDialog()" style="float: right;">
+      <i class="fa fa-plus" aria-hidden="true"></i>
+      Register Academic
+    </button>
+    &nbsp;&nbsp;
+    <a routerLink="../setting" mat-raised-button color="blue">
+      <i class="fa fa-arrow-left" aria-hidden="true" style="text-align: center;"></i>
+      Back to Settings
+    </a>    
+
+    <mat-form-field appearance="standard">
+      <mat-label>Search...</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. 2021" #input>
+    </mat-form-field>
+  </div>
+  <div *ngIf="loading">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <table mat-table matSort [dataSource]="dataSource">
+    <!-- ID Column -->
+    <ng-container matColumnDef="ID">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef> No. </th>
+      <td mat-cell *matCellDef="let i=index"> {{i+1}} </td>
+    </ng-container>
+
+    <!-- RegionName Column -->
+    <ng-container matColumnDef="academicYearName">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef> Academic Years </th>
+      <td mat-cell *matCellDef="let element"> {{element.academicYearName}} </td>
+    </ng-container>
+
+    <!-- Column -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef> Status </th>
+      <td mat-cell *matCellDef="let element">
+        <span class="badge bg-green" *ngIf="element.status==1">Active</span>
+        <span class="badge bg-red" *ngIf="element.status==0">InActive</span>
+      </td>
+    </ng-container>
+
+<!-- Actions Column -->
+<ng-container matColumnDef="action">
+  <th mat-header-cell *matHeaderCellDef> Actions </th>
+  <td mat-cell *matCellDef="let element">
+    <a title="Edit Data" (click)="[callDataById(element),openEditDialog()]">
+      <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+    </a>
+
+    <!-- In Active Btn-->
+    <a *ngIf="element.status===0" title="DeActivate" style="margin: 0px 10px; color:red;"
+      (click)="[callUpdate(element),openStatus0Dialog()]">
+      <i class="fa fa-shield" aria-hidden="true"></i>
+    </a>
+    <!-- Active Btn-->
+    <a *ngIf="element.status===1" title="Activate" style="margin: 0px 10px; color:green;"
+      (click)="[callUpdate(element),openStatus1Dialog()]">
+      <i class="fa fa-shield" aria-hidden="true"></i>
+    </a>
+  </td>
+</ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <!-- Row shown when there is no matching data. -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+      </tr>
+  </table>
+
+  <mat-paginator #paginator [pageSizeOptions]="[5, 10, 15, 20]">
+  </mat-paginator>
+</mat-card>
+
+<!-- ADD -->
+<ng-template #callDialog>
+  <form [formGroup]="formData" #form="ngForm" (ngSubmit)="submit()">
+    <h4>Add Academic Years</h4><br>
+    <div class="row">
+      <div class="col-sm-12">
+        <mat-form-field id="mat-form-field">
+          <input matInput type="text" placeholder="Academic Years" id="academicYearName"
+           formControlName="academicYearName" name="academicYearName"
+            required />
+          <mat-hint align="end"></mat-hint>
+        </mat-form-field>
+      </div>
+    </div><br>
+    <div class="row">
+      <div class="col-sm-12">
+        <mat-dialog-actions align="end">
+          <button type="button" matDialogClose="no" class="btn btn-light">Cancel</button>
+          &nbsp;&nbsp;
+          <button type="submit" matDialogClose="no" class="btn btn-primary" id="register">
+            Save A.Years
+          </button>
+        </mat-dialog-actions>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+<!-- EDIT MODAL -->
+<ng-template #callEditDialog>
+  <form [formGroup]="formData" #form="ngForm" (ngSubmit)="editSubmit()">
+    <h4>Edit Academic Years</h4><br>
+    <div class="row">
+      <div class="col-sm-12">
+        <mat-form-field id="mat-form-field">
+          <input matInput type="text" placeholder="Academic Years" id="academicYearName" value="{{academicyearname}}" formControlName="academicYearName" name="academicYearName" required />
+          <mat-hint align="end"></mat-hint>
+        </mat-form-field>
+      </div>
+    </div><br>
+    <div class="row">
+      <div class="col-sm-12">
+        <mat-dialog-actions align="end">
+          <button type="button" matDialogClose="no" class="btn btn-light">Cancel</button>
+          &nbsp;&nbsp;
+          <button type="submit" matDialogClose="no" class="btn btn-primary" id="register">
+            Save A.Years
+          </button>
+        </mat-dialog-actions>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+<!-- UNBLOCK MODAL -->
+<ng-template #callStatus1Dialog>
+  <form [formGroup]="formData" #form="ngForm" (ngSubmit)="updateStat()">
+    <div class="bg-green" style="width: 350px; height: 80px; padding: 10px; font-weight: bold; font-size: 16px;">
+      DeActivate Level..?
+    </div>
+    <div mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button type="submit" mat-button mat-dialog-close color="primary" class="bg-blue">DeActivate</button>
+    </div>
+  </form>
+</ng-template>
+
+<!-- BLOCK REGION MODAL -->
+<ng-template #callStatus0Dialog>
+  <form [formGroup]="formData" #form="ngForm" (ngSubmit)="updateStat()">
+    <div class="bg-red" style="width: 350px; height: 80px; padding: 10px; font-weight: bold; font-size: 16px;">
+      Activate Level..?
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <mat-dialog-actions align="end">
+          <button mat-button class="btn" matDialogClose="no">Cancel</button>
+          <button type="submit" matDialogClose="no" mat-button color="primary" id="register">
+            Activate
+          </button>
+        </mat-dialog-actions>
+      </div>
+    </div>
+  </form>
+</ng-template>
